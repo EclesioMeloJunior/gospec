@@ -5,7 +5,6 @@ testing:
     port: 80
     host: anyhost.com
     protocol: http
-    endpointsPrefix: /api/v1
     endpoints:
       - path: /endpoint
         description: Testing anyhost/api/v1/endpoit
@@ -20,7 +19,7 @@ testing:
               name: "Eclésio Melo Júnior"
               address:
                 streetName: "Some address here"
-        expected:
+        expect:
           headers:
             - "Content-Type:application/json"
           status: 201

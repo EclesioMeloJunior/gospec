@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -12,7 +11,6 @@ import (
 
 func main() {
 	conf := config.Load()
-
 	sc := scanner.NewFileSystem(conf.ApispecFilesFlag)
 
 	contents, err := apispec.LoadSpecFiles(sc)
@@ -29,5 +27,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(specfiles)
+	err = apispec.ExecuteTestSuite(specfiles)
+
+	if err != nil {
+		log.Fatalf("Error: %v\n", err)
+		os.Exit(1)
+	}
 }
