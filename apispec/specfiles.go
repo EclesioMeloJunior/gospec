@@ -5,21 +5,6 @@ import (
 	"fmt"
 )
 
-// SpecFileTesting struct definition
-type SpecFileTesting struct {
-	description     string `yaml:"description,omitempty"`
-	protocol        string `yaml:"protocol,required"`
-	port            int    `yaml:"port,required"`
-	host            string `yaml:"host,required"`
-	endpointsPrefix string `yaml:"endpointsPrefix,omitempty"`
-}
-
-// SpecFile struct definition
-type SpecFile struct {
-	version string          `yaml:"version"`
-	testing SpecFileTesting `yaml:"testing"`
-}
-
 // FileSystem defines where to search
 type FileSystem interface {
 	IsDir(filepath string) bool

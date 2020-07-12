@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -42,7 +43,10 @@ func (fs FileScanner) GetFiles() []string {
 	files := make([]string, 0)
 
 	err := filepath.Walk(fs.filepath, func(path string, info os.FileInfo, err error) error {
-		files = append(files, path)
+		if !info.IsDir() {
+			files = append(files, path)
+		}
+
 		return nil
 	})
 
@@ -60,11 +64,28 @@ func (fs FileScanner) GetLocation() string {
 }
 
 // IsYamlFile return if a filepath is a yaml
-func (fs FileScanner) IsYamlFile(filepath string) bool {
+func (fs FileScanner) IsYamlFile(filepathname string) bool {
+	fileinfo, err := os.Stat(filepathname)
+
+	if err != nil {
+		log.Fatalln(err.Error())
+		return false
+	}
+
+	if fileinfo.IsDir() {
+		return false
+	}
+
+	extension := filepath.Ext(filepathname)
+
+	if extension == ".yaml" || extension == ".yml" {
+		return true
+	}
+
 	return false
 }
 
 // ReadFile returns the content of a filepath or error
 func (fs FileScanner) ReadFile(filepath string) ([]byte, error) {
-	return nil, nil
+	return ioutil.ReadFile(filepath)
 }

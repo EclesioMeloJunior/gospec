@@ -12,14 +12,22 @@ import (
 
 func main() {
 	conf := config.Load()
+
 	sc := scanner.NewFileSystem(conf.ApispecFilesFlag)
 
 	contents, err := apispec.LoadSpecFiles(sc)
 
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		log.Fatalf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(contents)
+	specfiles, err := apispec.ParseSpecFiles(contents)
+
+	if err != nil {
+		log.Fatalf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(specfiles)
 }
