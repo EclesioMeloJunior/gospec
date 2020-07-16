@@ -6,6 +6,7 @@ import (
 
 	"github.com/eclesiomelojunior/gospec/apispec"
 	"github.com/eclesiomelojunior/gospec/config"
+	"github.com/eclesiomelojunior/gospec/httpclient"
 	"github.com/eclesiomelojunior/gospec/scanner"
 )
 
@@ -27,7 +28,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = apispec.ExecuteTestSuite(specfiles)
+	httpClient := httpclient.NewHTTPClient()
+
+	testRoom := apispec.NewRoom(httpClient)
+
+	err = testRoom.ExecuteTestSuite(specfiles)
 
 	if err != nil {
 		log.Fatalf("Error: %v\n", err)

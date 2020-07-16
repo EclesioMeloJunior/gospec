@@ -1,6 +1,9 @@
 package apispec
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // EndpointRequest defines the endpoints request format
 type EndpointRequest struct {
@@ -20,6 +23,7 @@ type EndpointExpect struct {
 type TestingEndpoint struct {
 	Path        string           `yaml:"path"`
 	Description string           `yaml:"description"`
+	Method      string           `yaml:"method"`
 	Request     *EndpointRequest `yaml:"request"`
 	Expect      *EndpointExpect  `yaml:"expect"`
 }
@@ -41,7 +45,7 @@ type SpecFile struct {
 }
 
 // IsValidVersion returns true if yaml has a valid version
-func (sf *SpecFile) IsValidVersion() bool {
+func (sf SpecFile) IsValidVersion() bool {
 	for _, a := range ValidVersions {
 		if a == sf.Version {
 			return true
@@ -97,6 +101,14 @@ func (sf *SpecFile) InvalidFields() []string {
 						invalidFields = append(invalidFields, buildErrMessage("Path", "is required"))
 					}
 
+					if endpoint.Method == "" {
+						invalidFields = append(invalidFields, buildErrMessage("Method", "is required"))
+					}
+
+					if !endpoint.IsValidMethod() {
+						invalidFields = append(invalidFields, buildErrMessage("Method", fmt.Sprintf("allowed methods: %s", strings.Join(ValidMethods, ","))))
+					}
+
 					if endpoint.Request == nil {
 						invalidFields = append(invalidFields, buildErrMessage("Request", "is required"))
 					}
@@ -130,6 +142,17 @@ func (sft *SpecFileTesting) BuildURL() string {
 
 	url := fmt.Sprintf("%s://%s:%v", sft.Protocol, sft.Host, sft.Port)
 	return addPrefix(url)
+}
+
+// IsValidMethod is to validate http method
+func (endpoint *TestingEndpoint) IsValidMethod() bool {
+	for _, method := range ValidMethods {
+		if method == endpoint.Method {
+			return true
+		}
+	}
+
+	return false
 }
 
 // BuildPath will mount the complete URL with endpoint to request

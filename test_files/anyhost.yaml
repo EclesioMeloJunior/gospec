@@ -7,6 +7,7 @@ testing:
     protocol: http
     endpoints:
       - path: /endpoint
+        method: POST
         description: Testing anyhost/api/v1/endpoit
         request:
           headers:
