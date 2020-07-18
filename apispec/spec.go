@@ -7,16 +7,16 @@ import (
 
 // EndpointRequest defines the endpoints request format
 type EndpointRequest struct {
-	Headers     []string                    `yaml:"headers"`
-	QueryParams []string                    `yaml:"queryParams"`
-	Body        map[interface{}]interface{} `yaml:"body"`
+	Headers     []string                          `yaml:"headers"`
+	QueryParams []string                          `yaml:"queryParams"`
+	Body        map[string]map[string]interface{} `yaml:"body"`
 }
 
 // EndpointExpect defines the expected from request
 type EndpointExpect struct {
-	Headers []string                    `yaml:"headers"`
-	Status  int                         `yaml:"status"`
-	Body    map[interface{}]interface{} `yaml:"body"`
+	Headers []string               `yaml:"headers"`
+	Status  int                    `yaml:"status"`
+	Body    map[string]interface{} `yaml:"body"`
 }
 
 // TestingEndpoint defines the endpoints to request
@@ -164,14 +164,4 @@ func (endpoint *TestingEndpoint) BuildPath(url string) string {
 	}
 
 	return fmt.Sprintf("%s%s", url, path)
-}
-
-// SetupHeaders will normalize headers
-func (request *EndpointRequest) SetupHeaders() []ClientMeta {
-	return nil
-}
-
-// SetupQueryParams will normalize queryparams
-func (request *EndpointRequest) SetupQueryParams() []ClientMeta {
-	return nil
 }
