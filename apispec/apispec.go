@@ -62,25 +62,32 @@ func (room *Room) ExecuteTestSuite(specs []SpecFile) error {
 
 			// Loop for every endpoint to test in the host
 			for _, endpoint := range testing.Endpoints {
+				var headers []string
+				var queryParams []string
+				var bodyRequest map[string]interface{}
+
+				if endpoint.Request != nil {
+					headers = endpoint.Request.Headers
+					queryParams = endpoint.Request.QueryParams
+					bodyRequest = endpoint.Request.Body["json"]
+				}
 
 				requestTo := endpoint.BuildPath(url)
 
-				headers, err := fromColonSeparatedToClientMeta(endpoint.Request.Headers)
+				requestHeaders, err := fromColonSeparatedToClientMeta(headers)
 
 				if err != nil {
 					return err
 				}
 
-				queryParams, err := fromColonSeparatedToClientMeta(endpoint.Request.QueryParams)
+				requestQueryParams, err := fromColonSeparatedToClientMeta(queryParams)
 
 				if err != nil {
 					return err
 				}
-
-				values := endpoint.Request.Body["json"]
 
 				marshaler := marshal.FactoryMarshal("json")
-				body, err := marshaler.Marshal(values)
+				body, err := marshaler.Marshal(bodyRequest)
 
 				if err != nil {
 					return err
@@ -88,9 +95,9 @@ func (room *Room) ExecuteTestSuite(specs []SpecFile) error {
 
 				response, err := room.client.
 					AddURL(requestTo).
-					AddHeaders(headers).
-					AddQueryParams(queryParams).
-					ExecWithBody(http.MethodPost, body)
+					AddHeaders(requestHeaders).
+					AddQueryParams(requestQueryParams).
+					ExecWithBody(endpoint.Method, body)
 
 				if err != nil {
 					return err

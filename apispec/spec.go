@@ -109,10 +109,6 @@ func (sf *SpecFile) InvalidFields() []string {
 						invalidFields = append(invalidFields, buildErrMessage("Method", fmt.Sprintf("allowed methods: %s", strings.Join(ValidMethods, ","))))
 					}
 
-					if endpoint.Request == nil {
-						invalidFields = append(invalidFields, buildErrMessage("Request", "is required"))
-					}
-
 					if endpoint.Expect == nil {
 						invalidFields = append(invalidFields, buildErrMessage("Expect", "is required"))
 					}
