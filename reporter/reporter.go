@@ -2,8 +2,8 @@ package reporter
 
 import "github.com/eclesiomelojunior/gospec/apispec"
 
-//NewReporter interface
-func NewReporter() apispec.Reporter {
+//NewCLIReporter interface
+func NewCLIReporter() apispec.Reporter {
 	return &cliReporter{}
 }
 

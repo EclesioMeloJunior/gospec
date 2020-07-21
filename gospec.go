@@ -38,8 +38,7 @@ func main() {
 
 	httpClient := httpclient.NewHTTPClient()
 
-	reporter := reporter.NewReporter()
-	assert := assert.NewAssert(reporter)
+	assert := assert.NewAssert()
 
 	testRoom := apispec.NewRoom(httpClient, assert)
 
@@ -50,7 +49,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	report := reporter.NewCLIReporter()
+
 	for _, result := range results {
-		reporter.Results(result)
+		report.Results(result)
 	}
 }

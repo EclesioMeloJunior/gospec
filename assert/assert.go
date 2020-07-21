@@ -8,14 +8,11 @@ import (
 
 // Assert struct
 type assert struct {
-	reporter apispec.Reporter
 }
 
 // NewAssert func
-func NewAssert(reporter apispec.Reporter) apispec.Assert {
-	return &assert{
-		reporter: reporter,
-	}
+func NewAssert() apispec.Assert {
+	return &assert{}
 }
 
 // Body method
