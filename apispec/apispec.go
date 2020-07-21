@@ -1,11 +1,8 @@
 package apispec
 
 import (
-	"errors"
-	"fmt"
 	"io"
 	"net/http"
-	"strings"
 
 	"github.com/eclesiomelojunior/gospec/marshal"
 )
@@ -29,29 +26,46 @@ type ClientMeta struct {
 // Client interface standartize the clients
 type Client interface {
 	AddURL(string) Client
-	AddHeaders([]ClientMeta) Client
+	AddHeaders(http.Header) Client
 	AddQueryParams([]ClientMeta) Client
 	Exec(string) (*http.Response, error)
 	ExecWithBody(string, io.ReadCloser) (*http.Response, error)
+}
+
+// Reporter interface
+type Reporter interface {
+	Results([]byte)
+}
+
+// Assert interface
+type Assert interface {
+	TestBody(interface{}) Assert
+	TestHeaders(http.Header) Assert
+	TestStatusCode(int) Assert
+
+	Test(*http.Response) ([]byte, error)
 }
 
 // Room struct
 type Room struct {
 	executed int
 	client   Client
-	reporter interface{}
+	assert   Assert
 }
 
 // NewRoom creates an new test room
-func NewRoom(client Client) *Room {
+func NewRoom(client Client, assert Assert) *Room {
 	return &Room{
 		executed: 0,
 		client:   client,
+		assert:   assert,
 	}
 }
 
 // ExecuteTestSuite will made request and compare to expected responses
-func (room *Room) ExecuteTestSuite(specs []SpecFile) error {
+func (room *Room) ExecuteTestSuite(specs []SpecFile) ([][]byte, error) {
+	results := [][]byte{}
+
 	// Loop throught all the spec files
 	for _, spec := range specs {
 
@@ -62,77 +76,52 @@ func (room *Room) ExecuteTestSuite(specs []SpecFile) error {
 
 			// Loop for every endpoint to test in the host
 			for _, endpoint := range testing.Endpoints {
-				var headers []string
-				var queryParams []string
-				var bodyRequest map[string]interface{}
+
+				var (
+					headers     http.Header
+					queryParams []ClientMeta
+					bodyRequest map[string]interface{}
+				)
 
 				if endpoint.Request != nil {
-					headers = endpoint.Request.Headers
-					queryParams = endpoint.Request.QueryParams
+					headers = endpoint.Request.GetHeaders()
+					queryParams = endpoint.Request.GetQueryParams()
 					bodyRequest = endpoint.Request.Body["json"]
 				}
 
 				requestTo := endpoint.BuildPath(url)
 
-				requestHeaders, err := fromColonSeparatedToClientMeta(headers)
-
-				if err != nil {
-					return err
-				}
-
-				requestQueryParams, err := fromColonSeparatedToClientMeta(queryParams)
-
-				if err != nil {
-					return err
-				}
-
 				marshaler := marshal.FactoryMarshal("json")
 				body, err := marshaler.Marshal(bodyRequest)
 
 				if err != nil {
-					return err
+					return nil, err
 				}
 
 				response, err := room.client.
 					AddURL(requestTo).
-					AddHeaders(requestHeaders).
-					AddQueryParams(requestQueryParams).
+					AddHeaders(headers).
+					AddQueryParams(queryParams).
 					ExecWithBody(endpoint.Method, body)
 
 				if err != nil {
-					return err
+					return nil, err
 				}
 
-				fmt.Println(response, err)
+				result, err := room.assert.
+					TestBody(endpoint.Expect.Body).
+					TestHeaders(endpoint.Expect.GetHeaders()).
+					TestStatusCode(endpoint.Expect.Status).
+					Test(response)
+
+				if err != nil {
+					return nil, err
+				}
+
+				results = append(results, result)
 			}
 		}
 	}
 
-	return nil
-}
-
-func fromColonSeparatedToClientMeta(colonSeparated []string) ([]ClientMeta, error) {
-	totalColonSeparated := len(colonSeparated)
-
-	if totalColonSeparated < 1 {
-		return []ClientMeta{}, nil
-	}
-
-	meta := make([]ClientMeta, totalColonSeparated)
-
-	for csIndex, cs := range colonSeparated {
-		if separator := strings.Index(cs, ":"); separator == -1 {
-			errmessage := fmt.Sprintf("Header %s must container header:value", cs)
-			return []ClientMeta{}, errors.New(errmessage)
-		}
-
-		headerValues := strings.Split(cs, ":")
-
-		meta[csIndex] = ClientMeta{
-			Key:   headerValues[0],
-			Value: headerValues[1],
-		}
-	}
-
-	return meta, nil
+	return results, nil
 }

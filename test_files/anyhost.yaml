@@ -9,10 +9,6 @@ testing:
       - path: /
         method: GET
         description: Testing google.com/
-        request:
-          body:
-            json:
-              name: "Eclésio"
         expect:
           headers:
             - "Content-Type:application/json"

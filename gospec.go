@@ -5,15 +5,23 @@ import (
 	"os"
 
 	"github.com/eclesiomelojunior/gospec/apispec"
+	"github.com/eclesiomelojunior/gospec/assert"
 	"github.com/eclesiomelojunior/gospec/config"
 	"github.com/eclesiomelojunior/gospec/httpclient"
+	"github.com/eclesiomelojunior/gospec/reporter"
 	"github.com/eclesiomelojunior/gospec/scanner"
 )
 
-func main() {
-	conf := config.Load()
-	sc := scanner.NewFileSystem(conf.ApispecFilesFlag)
+var (
+	conf *config.Config
+)
 
+func init() {
+	conf = config.Load()
+}
+
+func main() {
+	sc := scanner.NewFileSystem(conf.ApispecFilesFlag)
 	contents, err := apispec.LoadSpecFiles(sc)
 
 	if err != nil {
@@ -30,12 +38,19 @@ func main() {
 
 	httpClient := httpclient.NewHTTPClient()
 
-	testRoom := apispec.NewRoom(httpClient)
+	reporter := reporter.NewReporter()
+	assert := assert.NewAssert(reporter)
 
-	err = testRoom.ExecuteTestSuite(specfiles)
+	testRoom := apispec.NewRoom(httpClient, assert)
+
+	results, err := testRoom.ExecuteTestSuite(specfiles)
 
 	if err != nil {
 		log.Fatalf("Error: %v\n", err)
 		os.Exit(1)
+	}
+
+	for _, result := range results {
+		reporter.Results(result)
 	}
 }

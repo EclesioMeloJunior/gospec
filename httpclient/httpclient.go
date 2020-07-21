@@ -29,20 +29,8 @@ func (c *client) AddURL(url string) apispec.Client {
 	return c
 }
 
-func (c *client) AddHeaders(headers []apispec.ClientMeta) apispec.Client {
-	if len(headers) < 1 {
-		c.headers = map[string][]string{}
-		return c
-	}
-
-	httpRequestHeaders := make(map[string][]string)
-
-	for _, header := range headers {
-		httpRequestHeaders[header.Key] = []string{header.Value}
-	}
-
-	c.headers = httpRequestHeaders
-
+func (c *client) AddHeaders(headers http.Header) apispec.Client {
+	c.headers = headers
 	return c
 }
 
