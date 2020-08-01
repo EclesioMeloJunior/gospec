@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/eclesiomelojunior/gospec/apispec"
-	"github.com/eclesiomelojunior/gospec/assert"
 	"github.com/eclesiomelojunior/gospec/config"
 	"github.com/eclesiomelojunior/gospec/httpclient"
 	"github.com/eclesiomelojunior/gospec/reporter"
@@ -38,9 +37,7 @@ func main() {
 
 	httpClient := httpclient.NewHTTPClient()
 
-	assert := assert.NewAssert()
-
-	testRoom := apispec.NewRoom(httpClient, assert)
+	testRoom := apispec.NewRoom(httpClient)
 
 	results, err := testRoom.ExecuteTestSuite(specfiles)
 

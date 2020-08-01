@@ -1,18 +1,36 @@
 version: "1.0"
 
 testing:
-  - description: Testing anyhost.com
-    port: 443
-    host: google.com
-    protocol: https
+  - description: Testing json server
+    port: 3000
+    host: localhost
+    protocol: http
     endpoints:
-      - path: /
+      - path: /posts
         method: GET
-        description: Testing google.com/
+        description: Testing json-server at /posts
         expect:
           headers:
-            - "Content-Type:application/json"
+            - "Content-Type:application/json; charset=utf-8"
           status: 201
           body:
             json:
-              message: "User created"
+              - body: "some coment"
+                id: 1
+                postId: 1
+              - body: "some coment"
+                id: 1
+                postId: 1
+
+      - path: /comments
+        method: GET
+        description: Testing json-server at /comments
+        expect:
+          headers:
+            - "Content-Type:application/json; charset=utf-8"
+          status: 201
+          body:
+            json:
+              body: "some coment"
+              id: 1
+              postId: 1
