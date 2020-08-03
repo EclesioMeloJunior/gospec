@@ -8,12 +8,13 @@ import (
 	"strings"
 )
 
-type jsonMarshal struct {
+//JSONMarshal struct implements BodyMarshal to json spec
+type JSONMarshal struct {
 }
 
 // NewJSONMarshal returns BodyMarshal implementation
 func NewJSONMarshal() BodyMarshal {
-	return &jsonMarshal{}
+	return &JSONMarshal{}
 }
 
 func isMap(value interface{}) bool {
@@ -47,7 +48,8 @@ func parser(value interface{}) interface{} {
 	return value
 }
 
-func (jm *jsonMarshal) Marshal(marshaler interface{}) (io.ReadCloser, error) {
+// Marshal transform in interface to a json struct
+func (jm *JSONMarshal) Marshal(marshaler interface{}) (io.ReadCloser, error) {
 	marshaler = parser(marshaler)
 	parsedBytes, err := json.Marshal(marshaler)
 

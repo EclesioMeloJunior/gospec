@@ -184,6 +184,7 @@ type EndpointExpect struct {
 	Body    map[string]interface{} `yaml:"body"`
 }
 
+// GetHeaders transform the headers to http.Header
 func (expect *EndpointExpect) GetHeaders() http.Header {
 	normalizeHeaders, err := fromColonSeparatedToClientMeta(expect.Headers)
 
