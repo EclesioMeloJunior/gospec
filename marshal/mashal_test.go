@@ -1,7 +1,6 @@
 package marshal_test
 
 import (
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -51,8 +50,6 @@ func TestJSONMarshaler(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	fmt.Println(len(string(readBody)), len(expected))
 
 	if string(readBody) != expected {
 		t.Errorf(

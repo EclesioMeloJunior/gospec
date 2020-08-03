@@ -7,7 +7,6 @@ import (
 	"github.com/eclesiomelojunior/gospec/apispec"
 	"github.com/eclesiomelojunior/gospec/config"
 	"github.com/eclesiomelojunior/gospec/httpclient"
-	"github.com/eclesiomelojunior/gospec/reporter"
 	"github.com/eclesiomelojunior/gospec/scanner"
 )
 
@@ -39,16 +38,11 @@ func main() {
 
 	testRoom := apispec.NewRoom(httpClient)
 
-	results, err := testRoom.ExecuteTestSuite(specfiles)
+	_, err = testRoom.ExecuteTestSuite(specfiles)
 
 	if err != nil {
 		log.Fatalf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	report := reporter.NewCLIReporter()
-
-	for _, result := range results {
-		report.Results(result)
-	}
 }

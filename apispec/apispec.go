@@ -30,8 +30,13 @@ type ClientMeta struct {
 // Client interface standartize the clients
 type Client interface {
 	AddURL(string) Client
+	GetURL() string
+
 	AddHeaders(http.Header) Client
+	GetHeaders() http.Header
+
 	AddQueryParams([]ClientMeta) Client
+
 	Exec(string) (*http.Response, error)
 	ExecWithBody(string, io.ReadCloser) (*http.Response, error)
 }

@@ -29,12 +29,24 @@ func (c *client) AddURL(url string) apispec.Client {
 	return c
 }
 
+func (c *client) GetURL() string {
+	return c.url
+}
+
 func (c *client) AddHeaders(headers http.Header) apispec.Client {
 	c.headers = headers
 	return c
 }
 
+func (c *client) GetHeaders() http.Header {
+	return c.headers
+}
+
 func (c *client) AddQueryParams(queryParams []apispec.ClientMeta) apispec.Client {
+	if c.url == "" {
+		c.url = "/"
+	}
+
 	if len(queryParams) < 1 {
 
 		if qpIndex := strings.Index(c.url, "?"); qpIndex != -1 {
@@ -52,7 +64,7 @@ func (c *client) AddQueryParams(queryParams []apispec.ClientMeta) apispec.Client
 
 	urlQueryParams := strings.Join(formatedQueryParams, "&")
 
-	if string(c.url[len(c.url)-1]) == "/" {
+	if len(c.url) > 1 && string(c.url[len(c.url)-1]) == "/" {
 		c.url = fmt.Sprintf("%s?%s", string(c.url[:len(c.url)-1]), urlQueryParams)
 		return c
 	}
