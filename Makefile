@@ -3,3 +3,6 @@ run:
 
 build:
 	go build -o gospec.so ./... 
+
+test:
+	go test ./... -v
