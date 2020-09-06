@@ -17,7 +17,7 @@ Tenha instalado em sua máquina:
 ```yaml
 version: '1.0'
 
-testing:
+hosts:
   - description: Testing anyhost.com
     port: 80
     host: anyhost.com
