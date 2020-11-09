@@ -17,3 +17,15 @@ testing:
               - id: 1.0
                 title: "json-server"
                 author: "typicode"
+
+      - path: /comments/1
+        method: GET
+        expect:
+          headers:
+            - "Content-Type:application/json; charset=utf-8"
+          status: 200
+          body:
+            json:
+              id: 1.0
+              body: "some comment"
+              postId: 1.0
