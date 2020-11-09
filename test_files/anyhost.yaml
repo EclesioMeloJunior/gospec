@@ -1,36 +1,19 @@
-version: "1.0"
+version: "1"
 
 testing:
-  - description: Testing json server
-    port: 3000
+  - port: 3000
     host: localhost
     protocol: http
     endpoints:
       - path: /posts
         method: GET
-        description: Testing json-server at /posts
         expect:
           headers:
             - "Content-Type:application/json; charset=utf-8"
           status: 201
           body:
             json:
-              - body: "some coment"
-                id: 1
-                postId: 1
-              - body: "some coment"
-                id: 1
-                postId: 1
-
-      - path: /comments
-        method: GET
-        description: Testing json-server at /comments
-        expect:
-          headers:
-            - "Content-Type:application/json; charset=utf-8"
-          status: 201
-          body:
-            json:
-              body: "some coment"
-              id: 1
-              postId: 1
+              - name: "Eclésio"
+                id: "1"
+              - body: "Flávia"
+                id: 2

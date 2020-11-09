@@ -1,0 +1,4 @@
+1. Executando os testes para um arquivo yaml
+
+gospec --test someapitest.yml
+
