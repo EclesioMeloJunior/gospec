@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 )
 
 func assert(response *http.Response, expected testexpected) (string, error) {
@@ -80,9 +81,19 @@ func assertStatusCode(response *http.Response, expected testexpected) bool {
 }
 
 func assertArrayBody(receivedBody []map[string]interface{}, expected []map[string]interface{}) bool {
-	return false
+	if len(receivedBody) != len(expected) {
+		return false
+	}
+
+	for index, received := range receivedBody {
+		if !assertSimpleBody(received, expected[index]) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func assertSimpleBody(receivedBody map[string]interface{}, expectedBody map[string]interface{}) bool {
-	return false
+	return reflect.DeepEqual(receivedBody, expectedBody)
 }

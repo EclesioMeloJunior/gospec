@@ -14,7 +14,6 @@ testing:
           body:
             array: true
             json:
-              - name: "Eclésio"
-                id: "1"
-              - name: "Flávia"
-                id: "3"
+              - id: 1.0
+                title: "json-server"
+                author: "typicode"

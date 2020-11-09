@@ -67,9 +67,7 @@ func gospec(testfile string) error {
 		return err
 	}
 
-	suite(spec)
-
-	return nil
+	return suite(spec)
 }
 
 func parseFile(testfile string) (*specfile, error) {
