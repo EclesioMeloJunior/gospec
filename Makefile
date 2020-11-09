@@ -1,8 +1,5 @@
 run:
-	go run gospec.go --test-files ./test_files
-
-build:
-	go build -o gospec.so ./... 
+	go run ./... -test test_files/anyhost.yaml
 
 test:
 	go test ./... -v
