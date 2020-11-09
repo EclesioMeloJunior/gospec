@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -12,17 +13,31 @@ import (
 )
 
 // testoutput standartize [10-10-2020] Test http://localhost:8000/endpoint: OK
-const testoutput = `[%s] Test %s: %s`
+const testoutput = `[%s] %s: %s`
+
+type expectedbody struct {
+	Array bool        `yaml:"array"`
+	JSON  interface{} `yaml:"json"`
+}
+
+func (eb *expectedbody) IsArray() bool {
+	return eb.Array
+}
+
+func (eb *expectedbody) HasBody() bool {
+	return eb.JSON != nil
+}
 
 type testexpected struct {
-	Headers []string               `yaml:"headers"`
-	Status  int                    `yaml:"status"`
-	Body    map[string]interface{} `yaml:"body"`
+	Headers []string     `yaml:"headers"`
+	Status  int          `yaml:"status"`
+	Body    expectedbody `yaml:"body"`
 }
 
 type testendpoints struct {
-	Path   string `yaml:"path"`
-	Method string `yaml:"method"`
+	Path     string       `yaml:"path"`
+	Method   string       `yaml:"method"`
+	Expected testexpected `yaml:"expect"`
 }
 
 type testsection struct {
@@ -84,7 +99,25 @@ func suite(s *specfile) error {
 				endpoint.Path = string(endpoint.Path[1:])
 			}
 
-			testResult := "OK"
+			baseURL.Path = endpoint.Path
+
+			var err error
+			var response *http.Response
+
+			switch endpoint.Method {
+			case http.MethodGet:
+				response, err = get(baseURL.String(), nil)
+			}
+
+			if err != nil {
+				return err
+			}
+
+			var testResult string
+			if testResult, err = assert(response, endpoint.Expected); err != nil {
+				return err
+			}
+
 			printTestResult(baseURL.String(), testResult)
 		}
 	}
@@ -100,7 +133,7 @@ func buildURL(t testsection) url.URL {
 }
 
 func printTestResult(url string, result string) {
-	testTime := time.Now().Format(time.RFC822Z)
+	testTime := time.Now().Format(time.RFC850)
 	output := fmt.Sprintf(testoutput, testTime, url, result)
 	fmt.Println(output)
 }
