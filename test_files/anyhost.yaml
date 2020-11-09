@@ -1,4 +1,4 @@
-version: "1"
+version: 1
 
 testing:
   - port: 3000
@@ -10,10 +10,11 @@ testing:
         expect:
           headers:
             - "Content-Type:application/json; charset=utf-8"
-          status: 201
+          status: 200
           body:
+            array: true
             json:
               - name: "Eclésio"
                 id: "1"
-              - body: "Flávia"
-                id: 2
+              - name: "Flávia"
+                id: "3"
