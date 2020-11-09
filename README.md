@@ -12,7 +12,7 @@ Tenha instalado em sua máquina:
 2. Execute o comando `go run gospec.go -test {diretorio_dos_arquivos}`
 3. A aplicação irá efetuar as chamadas e asserçoes para cada arquivo
 
-### Example of a APIs test file
+### Examplo de um arquivo de testes
 
 ```yaml
 version: 1
