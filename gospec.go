@@ -13,7 +13,7 @@ import (
 )
 
 // testoutput standartize [10-10-2020] Test http://localhost:8000/endpoint: OK
-const testoutput = `[%s] %s: %s`
+const testoutput = `[%s] %s: %s (%v)`
 
 type expectedbody struct {
 	Array bool        `yaml:"array"`
@@ -54,6 +54,14 @@ type specfile struct {
 
 func (s *specfile) isVersionValid() bool {
 	return s.Version == 1
+}
+
+var (
+	restspec restclient
+)
+
+func init() {
+	restspec = &client{}
 }
 
 func gospec(testfile string) error {
@@ -102,9 +110,11 @@ func suite(s *specfile) error {
 			var err error
 			var response *http.Response
 
+			startedAt := time.Now()
+
 			switch endpoint.Method {
 			case http.MethodGet:
-				response, err = get(baseURL.String(), nil)
+				response, err = restspec.Get(baseURL.String(), nil)
 			}
 
 			if err != nil {
@@ -112,11 +122,11 @@ func suite(s *specfile) error {
 			}
 
 			var testResult string
-			if testResult, err = assert(response, endpoint.Expected); err != nil {
+			if testResult, err = result(response, endpoint.Expected); err != nil {
 				return err
 			}
 
-			printTestResult(baseURL.String(), testResult)
+			printTestResult(baseURL.String(), testResult, time.Since(startedAt))
 		}
 	}
 
@@ -130,8 +140,8 @@ func buildURL(t testsection) url.URL {
 	}
 }
 
-func printTestResult(url string, result string) {
+func printTestResult(url string, result string, elapsedTime time.Duration) {
 	testTime := time.Now().Format(time.RFC850)
-	output := fmt.Sprintf(testoutput, testTime, url, result)
+	output := fmt.Sprintf(testoutput, testTime, url, result, elapsedTime)
 	fmt.Println(output)
 }

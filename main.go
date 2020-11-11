@@ -11,11 +11,12 @@ var (
 )
 
 func init() {
-	flag.StringVar(&testFile, "test", "", "set the test file to use")
-	flag.Parse()
+	flag.StringVar(&testFile, "file", "", "set the test file to use")
 }
 
 func main() {
+	flag.Parse()
+
 	if err := gospec(testFile); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

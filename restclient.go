@@ -8,15 +8,21 @@ type httpclient interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
+type restclient interface {
+	Get(string, http.Header) (*http.Response, error)
+}
+
 var (
-	client httpclient
+	httpcli httpclient
 )
 
 func init() {
-	client = &http.Client{}
+	httpcli = &http.Client{}
 }
 
-func get(url string, headers http.Header) (*http.Response, error) {
+type client struct{}
+
+func (c *client) Get(url string, headers http.Header) (*http.Response, error) {
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 
 	if err != nil {
@@ -24,5 +30,5 @@ func get(url string, headers http.Header) (*http.Response, error) {
 	}
 
 	request.Header = headers
-	return client.Do(request)
+	return httpcli.Do(request)
 }

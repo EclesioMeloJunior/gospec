@@ -8,8 +8,8 @@ import (
 	"reflect"
 )
 
-func assert(response *http.Response, expected testexpected) (string, error) {
-	if !assertStatusCode(response, expected) {
+func result(response *http.Response, expected testexpected) (string, error) {
+	if response.StatusCode != expected.Status {
 		result := "FAIL\nExpected [%v], Received [%v]"
 		return fmt.Sprintf(result, expected.Status, response.StatusCode), nil
 	}
@@ -74,10 +74,6 @@ func assert(response *http.Response, expected testexpected) (string, error) {
 	}
 
 	return "OK", nil
-}
-
-func assertStatusCode(response *http.Response, expected testexpected) bool {
-	return response.StatusCode == expected.Status
 }
 
 func assertArrayBody(receivedBody []map[string]interface{}, expected []map[string]interface{}) bool {
